@@ -8,22 +8,26 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "biome check .",
-    "format": "biome check --apply ."
+    "format": "biome check --apply .",
+    "test": "vitest run"
   },
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/docker-js/dockerjs.git",
-		"directory": "packages/dockerjs"
-	},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/docker-js/dockerjs.git",
+    "directory": "packages/dockerjs"
+  },
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@9.0.5",
   "devDependencies": {
     "@biomejs/biome": "^1.7.1",
     "@types/node": "^20.12.7",
+    "@vitest/coverage-v8": "^1.5.0",
+    "ts-jest": "^29.1.2",
     "tsup": "^8.0.2",
-    "typescript": "^5.4.5"
-  }
+    "typescript": "^5.4.5",
+    "vitest": "^1.5.0"
+  },
+  "packageManager": "pnpm@9.0.5"
 }

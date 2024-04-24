@@ -16,6 +16,10 @@
     "format": {
       "inputs": ["**/*"],
       "outputs": ["**/*"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["**/*.ts"]
     }
   }
 }
