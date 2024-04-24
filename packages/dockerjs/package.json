@@ -1,0 +1,29 @@
+{
+  "name": "@dockerjs/dockerjs",
+  "version": "0.0.1",
+  "type": "module",
+  "author": "Davi Patricio <davipatricio@pm.me>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "biome check .",
+    "format": "biome check --apply ."
+  },
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/docker-js/dockerjs.git",
+		"directory": "packages/dockerjs"
+	},
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@9.0.5",
+  "devDependencies": {
+    "@biomejs/biome": "^1.7.1",
+    "@types/node": "^20.12.7",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  }
+}
