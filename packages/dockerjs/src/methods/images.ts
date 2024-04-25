@@ -27,7 +27,7 @@ export class ImageHandler {
   pull({ name, version, fromSrc, tag, platform }: ImagePullOptions) {
     return this.client.rest.request('images/create', {
       method: 'POST',
-      query: {
+      params: {
         fromImage: `${name}:${version ?? 'latest'}`,
         fromSrc,
         tag,
