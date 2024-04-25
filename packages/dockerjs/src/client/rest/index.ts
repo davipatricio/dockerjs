@@ -6,6 +6,7 @@ type HTTPMethods = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 interface RequestOptions {
   data?: unknown;
   method?: HTTPMethods;
+  query?: Record<string, unknown> | unknown;
 }
 
 export class RestManager {
@@ -18,7 +19,7 @@ export class RestManager {
     );
   }
 
-  async request<T>(path: string, { method, data } = { method: 'GET' } as RequestOptions) {
+  async request<T>(path: string, { method, data, query } = {} as RequestOptions) {
     const baseURL = `http://localhost/${this.client.options.dockerVersion}`;
 
     if (path.startsWith('/')) {
@@ -26,10 +27,12 @@ export class RestManager {
     }
 
     const req = await request(`${baseURL}/${path}`, {
-      method: method as never,
+      method: method ?? 'GET',
       headers: {
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
+      query: query ?? {},
       body: data ? JSON.stringify(data) : null
     });
 

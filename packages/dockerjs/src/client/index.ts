@@ -1,4 +1,5 @@
-import { createContainerHandler } from '../methods/containers';
+import { ContainerHandler } from '../methods/containers';
+import { ImageHandler } from '../methods/images';
 import { RestManager } from './rest';
 
 export interface DockerClientOptions {
@@ -11,7 +12,8 @@ export class DockerClient {
   options: DockerClientOptions;
   rest: RestManager;
 
-  containers: ReturnType<typeof createContainerHandler>;
+  containers = new ContainerHandler(this);
+  images = new ImageHandler(this);
 
   constructor(options?: Partial<DockerClientOptions>) {
     this.options = {
@@ -22,6 +24,5 @@ export class DockerClient {
     };
 
     this.rest = new RestManager(this);
-    this.containers = createContainerHandler(this);
   }
 }
