@@ -12,7 +12,7 @@ export class ContainerHandler {
     return this.client.rest.request<{ Id: string }>('containers/create', {
       method: 'POST',
       data: options,
-      query: {
+      params: {
         name
       }
     });
@@ -24,7 +24,7 @@ export class ContainerHandler {
   async delete(id: string, options?: ContainerRemoveOptions) {
     return this.client.rest.request(`containers/${id}`, {
       method: 'DELETE',
-      query: options
+      params: options
     });
   }
 
@@ -43,12 +43,14 @@ export class ContainerHandler {
     if (!data || typeof data === 'object')
       return this.client.rest.request<ContainerInfo[]>('containers/json', {
         method: 'GET',
-        query: data
+        params: data
       });
 
     return this.client.rest.request<ContainerInspectInfo>(`containers/${data}/json`, {
       method: 'GET',
-      query: data
+      params: {
+        id: data
+      }
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Agent, request, setGlobalDispatcher } from 'undici';
+import axios, { type AxiosInstance } from 'axios';
 import type { DockerClient } from '..';
 
 type HTTPMethods = 'GET' | 'POST' | 'PATCH' | 'DELETE';
@@ -6,38 +6,43 @@ type HTTPMethods = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 interface RequestOptions {
   data?: unknown;
   method?: HTTPMethods;
-  query?: Record<string, unknown> | unknown;
+  params?: Record<string, unknown> | unknown;
 }
 
 export class RestManager {
+  axios: AxiosInstance;
+
   constructor(public client: DockerClient) {
-    setGlobalDispatcher(
-      new Agent({
-        connectTimeout: client.options.timeout,
-        socketPath: client.options.socketPath
-      })
-    );
+    this.axios = axios.create({
+      baseURL: `http://localhost/${client.options.dockerVersion}`,
+      socketPath: client.options.socketPath,
+      timeout: client.options.timeout,
+      validateStatus: () => true
+    });
   }
 
-  async request<T>(path: string, { method, data, query } = {} as RequestOptions) {
-    const baseURL = `http://localhost/${this.client.options.dockerVersion}`;
-
+  async request<T>(path: string, { method, data, params } = {} as RequestOptions): Promise<T> {
     if (path.startsWith('/')) {
       throw new Error(`Path must not start with /: ${path}`);
     }
 
-    const req = await request(`${baseURL}/${path}`, {
+    const req = await this.axios(path, {
       method: method ?? 'GET',
       headers: {
-        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
-      query: query ?? {},
-      body: data ? JSON.stringify(data) : null
+      params,
+      data
     });
 
-    const json = await req.body.json();
+    if (req.status >= 400 && req.status < 500) {
+      throw new Error(req.data.message ?? JSON.stringify(req.data));
+    }
 
-    return json as T;
+    try {
+      return typeof req.data === 'object' ? req.data : JSON.parse(req.data);
+    } catch (e) {
+      return {} as T;
+    }
   }
 }
