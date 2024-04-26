@@ -4,7 +4,7 @@ interface ImagePullOptions {
   /**
    * Name of the image to pull. The name may include a tag or digest. This parameter may only be used when pulling an image. The pull is cancelled if the HTTP connection is closed.
    */
-  fromImage: string;
+  fromImage?: string;
   /**
    * Source to import. The value may be a URL from which the image can be retrieved or - to read the image from the request body.
    */
