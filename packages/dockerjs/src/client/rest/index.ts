@@ -21,12 +21,12 @@ export class RestManager {
     });
   }
 
-  async request<T>(path: string, { method, data, params } = {} as RequestOptions): Promise<T> {
+  async request<T>(path: string, { method, data, params } = {} as RequestOptions) {
     if (path.startsWith('/')) {
       throw new Error(`Path must not start with /: ${path}`);
     }
 
-    const req = await this.axios(path, {
+    const req = await this.axios<T>(path, {
       method: method ?? 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -36,13 +36,10 @@ export class RestManager {
     });
 
     if (req.status >= 400 && req.status < 500) {
+      // @ts-expect-error
       throw new Error(req.data.message ?? JSON.stringify(req.data));
     }
 
-    try {
-      return typeof req.data === 'object' ? req.data : JSON.parse(req.data);
-    } catch (e) {
-      return {} as T;
-    }
+    return req;
   }
 }

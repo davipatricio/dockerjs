@@ -1,11 +1,10 @@
 import type { DockerClient } from '../client';
 
 interface ImagePullOptions {
-  name: string;
   /**
-   * Defaults to `latest`
+   * Name of the image to pull. The name may include a tag or digest. This parameter may only be used when pulling an image. The pull is cancelled if the HTTP connection is closed.
    */
-  version?: string;
+  fromImage: string;
   /**
    * Source to import. The value may be a URL from which the image can be retrieved or - to read the image from the request body.
    */
@@ -24,15 +23,12 @@ export class ImageHandler {
   /**
    * Pulls an image from the docker registry
    */
-  pull({ name, version, fromSrc, tag, platform }: ImagePullOptions) {
-    return this.client.rest.request('images/create', {
+  async pull(options: ImagePullOptions) {
+    await this.client.rest.request('images/create', {
       method: 'POST',
-      params: {
-        fromImage: `${name}:${version ?? 'latest'}`,
-        fromSrc,
-        tag,
-        platform
-      }
+      params: options
     });
+
+    return;
   }
 }
