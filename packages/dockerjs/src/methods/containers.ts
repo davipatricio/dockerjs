@@ -35,12 +35,19 @@ export class ContainerHandler {
    * @returns {Promise<ContainerInfo[]>} List of containers
    */
   async get(options?: ContainerListOptions): Promise<ContainerInfo[]>;
+
   /**
    * Inspects a container
    * @param options - Options
    * @returns {Promise<ContainerInfo>} The inspected container
    */
   async get(id?: string): Promise<ContainerInspectInfo>;
+
+  /**
+   * Gets a container or the list of containers
+   * @param data - Options
+   * @returns {Promise<ContainerInspectInfo | ContainerInfo[]>}
+   */
   async get(data?: ContainerListOptions | string) {
     if (!data || typeof data === 'object') {
       const req = await this.client.rest.request<ContainerInfo[]>('containers/json', {
@@ -59,5 +66,25 @@ export class ContainerHandler {
     });
 
     return req.data;
+  }
+
+  /**
+   * Starts a stopped container. Throws if the container is already running
+   * @param id - ID of the container
+   */
+  async start(id: string) {
+    await this.client.rest.request(`containers/${id}/start`, {
+      method: 'POST'
+    });
+  }
+
+  /**
+   * Stops a running container. Throws if the container is already stopped
+   * @param id - ID of the container
+   */
+  async stop(id: string) {
+    await this.client.rest.request(`containers/${id}/stop`, {
+      method: 'POST'
+    });
   }
 }

@@ -1,13 +1,19 @@
+import type { ContainerInfo } from 'dockerode';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { DockerClient } from '../dist/index';
 
 describe('@dockerjs/docker-js | containers', () => {
   const client = new DockerClient();
 
-  const cleanup = async () => {
+  const getTestContainer = async () => {
     const containers = await client.containers.get({ all: true });
     const container = containers.find((container) => container.Names.includes('/dockerjs-test'));
 
+    return container as ContainerInfo;
+  };
+
+  const cleanup = async () => {
+    const container = await getTestContainer();
     if (container) await client.containers.delete(container.Id);
   };
 
@@ -25,13 +31,13 @@ describe('@dockerjs/docker-js | containers', () => {
 
   test('pull hello-world image', async () => {
     try {
-      await client.images.pull({ name: 'hello-world', version: 'linux' });
+      await client.images.pull({ fromImage: 'hello-world' });
     } catch (e) {
       console.log(e);
     }
   });
 
-  test('create container from image hello-world', async (ctx) => {
+  test('create container from image hello-world', async () => {
     const container = await client.containers.create('dockerjs-test', {
       Image: 'hello-world:linux',
       Tty: true
@@ -57,5 +63,19 @@ describe('@dockerjs/docker-js | containers', () => {
 
       expect(Array.isArray(containers[0].Names)).toBe(true);
     }
+  });
+
+  test('start container', async () => {
+    const container = await getTestContainer();
+    expect(container).toBeDefined();
+
+    await client.containers.start(container.Id);
+  });
+
+  test('stop container', async () => {
+    const container = await getTestContainer();
+    expect(container).toBeDefined();
+
+    await client.containers.stop(container.Id);
   });
 });
