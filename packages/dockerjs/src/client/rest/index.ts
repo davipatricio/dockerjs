@@ -7,6 +7,7 @@ interface RequestOptions {
   data?: unknown;
   method?: HTTPMethods;
   params?: Record<string, unknown> | unknown;
+  timeout?: number;
 }
 
 export class RestManager {
@@ -21,7 +22,7 @@ export class RestManager {
     });
   }
 
-  async request<T>(path: string, { method, data, params } = {} as RequestOptions) {
+  async request<T>(path: string, { method, data, params, timeout } = {} as RequestOptions) {
     if (path.startsWith('/')) {
       throw new Error(`Path must not start with /: ${path}`);
     }
@@ -31,6 +32,7 @@ export class RestManager {
       headers: {
         'Content-Type': 'application/json'
       },
+      timeout: timeout ?? 15000,
       params,
       data
     });

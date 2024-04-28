@@ -10,3 +10,16 @@ export interface CreateContainer {
 export interface ContainerRenameOptions {
   name: string;
 }
+
+export interface ContainerWaitResult {
+  /**
+   * Exit code of the container
+   */
+  StatusCode: number;
+  /**
+   * Container waiting error, if any
+   */
+  Error: {
+    Message: string;
+  };
+}

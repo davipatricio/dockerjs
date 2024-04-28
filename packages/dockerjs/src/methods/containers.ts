@@ -1,4 +1,5 @@
 import {
+  ContainerWaitOptions,
   PruneContainersInfo,
   type ContainerCreateOptions,
   type ContainerInfo,
@@ -8,7 +9,7 @@ import {
   type ContainerStopOptions
 } from 'dockerode';
 import type { DockerClient } from '../client';
-import type { ContainerRenameOptions, CreateContainer, ListContainerProcesses } from '../types/docker';
+import type { ContainerRenameOptions, ContainerWaitResult, CreateContainer, ListContainerProcesses } from '../types/docker';
 
 export class ContainerHandler {
   // biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
@@ -170,6 +171,20 @@ export class ContainerHandler {
   async prune() {
     const req = await this.client.rest.request<PruneContainersInfo>('containers/prune', {
       method: 'POST'
+    });
+
+    return req.data;
+  }
+
+  /**
+   * Block until a container stops, then returns the exit code.
+   * @param id - ID of the container
+   */
+  async wait(id: string, options?: ContainerWaitOptions) {
+    const req = await this.client.rest.request<ContainerWaitResult>(`containers/${id}/wait`, {
+      method: 'POST',
+      params: options,
+      timeout: Number.POSITIVE_INFINITY
     });
 
     return req.data;
