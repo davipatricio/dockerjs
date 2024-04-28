@@ -1,12 +1,12 @@
-import {
+import type {
+  ContainerCreateOptions,
+  ContainerInfo,
+  ContainerInspectInfo,
+  ContainerListOptions,
+  ContainerRemoveOptions,
+  ContainerStopOptions,
   ContainerWaitOptions,
-  PruneContainersInfo,
-  type ContainerCreateOptions,
-  type ContainerInfo,
-  type ContainerInspectInfo,
-  type ContainerListOptions,
-  type ContainerRemoveOptions,
-  type ContainerStopOptions
+  PruneContainersInfo
 } from 'dockerode';
 import type { DockerClient } from '../client';
 import type { ContainerRenameOptions, ContainerWaitResult, CreateContainer, ListContainerProcesses } from '../types/docker';
