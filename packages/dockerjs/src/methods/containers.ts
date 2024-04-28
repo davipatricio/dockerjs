@@ -49,7 +49,7 @@ export class ContainerHandler {
   /**
    * Inspects a container
    * @param options - Options
-   * @returns {Promise<ContainerInfo>} The inspected container
+   * @returns {Promise<ContainerInspectInfo>} The inspected container
    */
   async get(id?: string): Promise<ContainerInspectInfo>;
 
