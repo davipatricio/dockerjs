@@ -1,4 +1,11 @@
-import type { ContainerCreateOptions, ContainerInfo, ContainerInspectInfo, ContainerListOptions, ContainerRemoveOptions } from 'dockerode';
+import type {
+  ContainerCreateOptions,
+  ContainerInfo,
+  ContainerInspectInfo,
+  ContainerListOptions,
+  ContainerRemoveOptions,
+  ContainerStopOptions
+} from 'dockerode';
 import type { DockerClient } from '../client';
 import type { CreateContainer, ListContainerProcesses } from '../types/docker';
 
@@ -96,9 +103,31 @@ export class ContainerHandler {
    * Stops a running container. Throws if the container is already stopped
    * @param id - ID of the container
    */
-  async stop(id: string) {
+  async stop(id: string, options?: ContainerStopOptions) {
     await this.client.rest.request(`containers/${id}/stop`, {
-      method: 'POST'
+      method: 'POST',
+      params: options
+    });
+  }
+
+  /**
+   * Stops a running container. Throws if the container is already stopped
+   * @param id - ID of the container
+   */
+  async restart(id: string, options?: ContainerStopOptions) {
+    await this.client.rest.request(`containers/${id}/restart`, {
+      method: 'POST',
+      params: options
+    });
+  }
+  /**
+   * Stops a running container. Throws if the container is already stopped
+   * @param id - ID of the container
+   */
+  async kill(id: string, options?: Omit<ContainerStopOptions, 't'>) {
+    await this.client.rest.request(`containers/${id}/kill`, {
+      method: 'POST',
+      params: options
     });
   }
 }
