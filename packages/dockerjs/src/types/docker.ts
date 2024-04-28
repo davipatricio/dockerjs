@@ -6,3 +6,7 @@ export interface ListContainerProcesses {
 export interface CreateContainer {
   Id: string;
 }
+
+export interface ContainerRenameOptions {
+  name: string;
+}

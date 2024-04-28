@@ -1,13 +1,14 @@
-import type {
-  ContainerCreateOptions,
-  ContainerInfo,
-  ContainerInspectInfo,
-  ContainerListOptions,
-  ContainerRemoveOptions,
-  ContainerStopOptions
+import {
+  PruneContainersInfo,
+  type ContainerCreateOptions,
+  type ContainerInfo,
+  type ContainerInspectInfo,
+  type ContainerListOptions,
+  type ContainerRemoveOptions,
+  type ContainerStopOptions
 } from 'dockerode';
 import type { DockerClient } from '../client';
-import type { CreateContainer, ListContainerProcesses } from '../types/docker';
+import type { ContainerRenameOptions, CreateContainer, ListContainerProcesses } from '../types/docker';
 
 export class ContainerHandler {
   // biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
@@ -120,8 +121,9 @@ export class ContainerHandler {
       params: options
     });
   }
+
   /**
-   * Stops a running container. Throws if the container is already stopped
+   * Kills a running container. Throws if the container is already stopped
    * @param id - ID of the container
    */
   async kill(id: string, options?: Omit<ContainerStopOptions, 't'>) {
@@ -129,5 +131,47 @@ export class ContainerHandler {
       method: 'POST',
       params: options
     });
+  }
+
+  /**
+   * Use the freezer cgroup to suspend all processes in a container.
+   * @param id - ID of the container
+   */
+  async pause(id: string) {
+    await this.client.rest.request(`containers/${id}/pause`, {
+      method: 'POST'
+    });
+  }
+
+  /**
+   * Resume a container which has been paused.
+   * @param id - ID of the container
+   */
+  async unpause(id: string) {
+    await this.client.rest.request(`containers/${id}/unpause`, {
+      method: 'POST'
+    });
+  }
+
+  /**
+   * Renames a container
+   * @param id - ID of the container
+   */
+  async rename(id: string, options?: ContainerRenameOptions) {
+    await this.client.rest.request(`containers/${id}/rename`, {
+      method: 'POST',
+      params: options
+    });
+  }
+
+  /**
+   * Prune unused containers
+   */
+  async prune() {
+    const req = await this.client.rest.request<PruneContainersInfo>('containers/prune', {
+      method: 'POST'
+    });
+
+    return req.data;
   }
 }
