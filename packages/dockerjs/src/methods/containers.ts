@@ -1,5 +1,6 @@
 import type { ContainerCreateOptions, ContainerInfo, ContainerInspectInfo, ContainerListOptions, ContainerRemoveOptions } from 'dockerode';
 import type { DockerClient } from '../client';
+import type { CreateContainer, ListContainerProcesses } from '../types/docker';
 
 export class ContainerHandler {
   // biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
@@ -9,7 +10,7 @@ export class ContainerHandler {
    * Creates a new container
    */
   async create(name: string, options: Omit<ContainerCreateOptions, 'name'>) {
-    const req = await this.client.rest.request<{ Id: string }>('containers/create', {
+    const req = await this.client.rest.request<CreateContainer>('containers/create', {
       method: 'POST',
       data: options,
       params: {
@@ -63,6 +64,19 @@ export class ContainerHandler {
       params: {
         id: data
       }
+    });
+
+    return req.data;
+  }
+
+  /**
+   * List processes running inside a container
+   * On Unix systems, this is done by running the ps command. This endpoint is not supported on Windows.
+   * @param id - ID of the container
+   */
+  async listProcesses(id: string) {
+    const req = await this.client.rest.request<ListContainerProcesses>(`containers/${id}/top`, {
+      method: 'GET'
     });
 
     return req.data;
