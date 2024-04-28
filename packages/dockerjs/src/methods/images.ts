@@ -1,4 +1,6 @@
+import type { ImageInfo, ImageInspectInfo, ImageRemoveInfo, ImageRemoveOptions, ListImagesOptions, PruneImagesInfo } from 'dockerode';
 import type { DockerClient } from '../client';
+import type { ImagePruneOptions } from '../types/docker';
 
 interface ImagePullOptions {
   /**
@@ -21,7 +23,60 @@ export class ImageHandler {
   constructor(public client: DockerClient) {}
 
   /**
+   * Deletes an image
+   * @param name - Name of the image
+   */
+  async delete(name: string, options?: ImageRemoveOptions) {
+    const req = await this.client.rest.request<ImageRemoveInfo>(`images/${name}`, {
+      method: 'DELETE',
+      params: options
+    });
+
+    return req.data;
+  }
+
+  /**
+   * Returns a list of images on the server. Note that it uses a different, smaller representation of an image than inspecting a single image.
+   * @param options - Options
+   * @returns {Promise<ImageInfo[]>} List of containers
+   */
+  async get(options?: ListImagesOptions): Promise<ImageInfo[]>;
+
+  /**
+   * Inspects a image
+   * @param options - Options
+   * @returns {Promise<ImageInspectInfo>} The inspected image
+   */
+  async get(id?: string): Promise<ImageInspectInfo>;
+
+  /**
+   * Gets a image or the list of stored images
+   * @param data - Options
+   * @returns {Promise<ImageInspectInfo | ImageInfo[]>}
+   */
+  async get(data?: ListImagesOptions | string) {
+    if (!data || typeof data === 'object') {
+      const req = await this.client.rest.request<ImageInfo[]>('images/json', {
+        method: 'GET',
+        params: data
+      });
+
+      return req.data;
+    }
+
+    const req = await this.client.rest.request<ImageInspectInfo>(`images/${data}/json`, {
+      method: 'GET',
+      params: {
+        name: data
+      }
+    });
+
+    return req.data;
+  }
+
+  /**
    * Pulls an image from the docker registry
+   * @param options - Options
    */
   async pull(options: ImagePullOptions) {
     await this.client.rest.request('images/create', {
@@ -30,5 +85,18 @@ export class ImageHandler {
     });
 
     return;
+  }
+
+  /**
+   * Delete builder cache
+   * @param options - Options
+   */
+  async prune(options?: ImagePruneOptions) {
+    const req = await this.client.rest.request<PruneImagesInfo>('images/prune', {
+      method: 'POST',
+      params: options
+    });
+
+    return req.data;
   }
 }

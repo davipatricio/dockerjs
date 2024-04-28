@@ -7,10 +7,6 @@ export interface CreateContainer {
   Id: string;
 }
 
-export interface ContainerRenameOptions {
-  name: string;
-}
-
 export interface ContainerWaitResult {
   /**
    * Exit code of the container
@@ -22,4 +18,14 @@ export interface ContainerWaitResult {
   Error: {
     Message: string;
   };
+}
+
+export interface ContainerRenameOptions {
+  name: string;
+}
+
+export interface ImagePruneOptions {
+  all?: boolean;
+  filters?: unknown;
+  'keep-storage'?: number;
 }
